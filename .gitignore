@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+
+# Secrets & environment
+.env
+.tushare_token
+
+# macOS
+.DS_Store
+
+# Generated reports & stats
+demo_report.html
+中美流动性与五大指数研究报告.html
+stats.json
+stats_demo.json
+
+# Generated charts
+charts/
+charts_demo/
+
+# Data directory: ignore everything except tracked sample data
+data/*
+!data/panel_monthly.csv
+data/演示回测数据.xlsx
+data/panel_demo.csv
+
+# Logs
+*.log
