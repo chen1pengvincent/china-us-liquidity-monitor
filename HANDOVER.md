@@ -34,7 +34,7 @@ cd <项目目录>
 python fetch_data.py && python analyze.py && python generate_report.py
 ```
 
-要求：本机 `python` 为 Kimi Work 托管运行时（已装 tushare 1.4.29 / pandas / scipy / matplotlib / openpyxl）。
+要求：任一 Python 3.12+ 环境，`pip install -r requirements.txt` 即可（analyze.py 会自动探测系统中文字体；Kimi Work 托管运行时不是必需的）。
 
 ## 4. 数据源与凭证
 
@@ -105,10 +105,11 @@ Tushare 限流：每分钟 200 次——本管道每次运行仅十余次调用�
 |------|------|
 | `tushare` 报权限/积分错误 | token 失效或积分不足：请用户去 tushare.pro 检查；期间管道自动切腾讯兜底 |
 | FRED 超时 | 检查本机网络能否访问 fred.stlouisfed.org；失败时保留旧 `panel_monthly.csv`，报告仍可用 |
-| 报告图表乱码 | 确认用托管运行时跑 `analyze.py`（`daimon_runtime.setup_plot` 负责 CJK 字体） |
+| 报告图表乱码 | `analyze.py` 会自动探测常见 CJK 字体；确认为系统安装任一中文字体（macOS 自带 PingFang SC；Linux 装 Noto Sans CJK），缺字体时脚本会打印警告但正常产出 |
 | HTML 打开无图 | 报告是自包含 base64；若图片缺失说明生成时 `charts/` 缺文件，重跑 analyze.py |
 
 ## 10. 变更日志
 
 - **v1（2026-09-26）**：腾讯/东财抓指数 + FRED 宏观；报告首版。
 - **v2（2026-09-28）**：指数源切换 Tushare Pro（专业 API），修复标普与中证1000 历史缺口；新增 `sources.log`、拼接校验、腾讯兜底、本文档。
+- **v2.1（2026-09-29）**：移除 `analyze.py` 对 Kimi 内部运行时 `daimon_runtime` 的硬依赖（通用环境自动探测 CJK 字体，缺字体仅警告不中断）；README/HANDOVER 同步修正环境要求；修正"标普×沪深300 2010–2020 相关性 0.62"为可复现的 0.43（含 n）。
