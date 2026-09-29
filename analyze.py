@@ -165,10 +165,25 @@ with pd.ExcelWriter(xlsx, engine="openpyxl") as w:
     df[[c + "_r" for c in IDX_US + IDX_CN]].join(d[list(LVARS)]).to_excel(w, sheet_name="月度收益率")
 
 # ---------- 5) 图表 ----------
-sys.path.insert(0, str(Path(sys.executable).parent.parent.parent))
-from daimon_runtime import setup_plot
 import matplotlib.pyplot as plt
-setup_plot()
+try:
+    # 优先使用 Kimi 运行时自带的中文字体配置（在 Kimi 环境内运行时保持原行为）
+    sys.path.insert(0, str(Path(sys.executable).parent.parent.parent))
+    from daimon_runtime import setup_plot
+    setup_plot()
+except ImportError:
+    # 通用环境：本地探测常见 CJK 字体；找不到时仅警告，不中断产出
+    from matplotlib import font_manager
+    plt.rcParams["axes.unicode_minus"] = False
+    for cand in ("PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+                 "Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC",
+                 "WenQuanYi Zen Hei"):
+        if any(cand.lower() in f.name.lower() for f in font_manager.fontManager.ttflist):
+            plt.rcParams["font.sans-serif"] = [cand, "DejaVu Sans"]
+            break
+    else:
+        print("[警告] 未找到常见 CJK 字体，图表中的中文可能显示为方块；"
+              "可安装 Noto Sans CJK / 微软雅黑等字体后重试。")
 
 colors = {"纳斯达克综指": "#7c3aed", "标普500": "#2563eb", "上证指数": "#dc2626",
           "沪深300": "#ea580c", "中证1000": "#ca8a04"}
